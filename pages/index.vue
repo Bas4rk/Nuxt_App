@@ -1,22 +1,49 @@
 <template>
-  <div class="signup">
-    <h1>アカウント登録</h1>
-    <input type="text" placeholder="ユーザー名" v-model="username">
-    <input type="password" placeholder="パスワード" v-model="password">
-    <button>登録</button>
-    <p>
-      <router-link to="/signin">サインインはこちらからできます</router-link>
-    </p>
+  <div class="top">
+    <h1>Top画面</h1>
+		<p>{{errorMessage}}</p>
+		<div v-if="isLogin">
+			<p>{{user.email}}でログインしてます。</p>
+			<button @click="logOut">ログアウト</button>
+		</div>
+		<div v-else>
+			<p>ログインしていません</p>
+		</div>
+	<Footer />
   </div>
 </template>
 
 <script>
+import Footer from '~/components/Footer.vue'
+//import firebase from '@/plugins/firebase'
+
 export default {
-  name: 'Signup',
+  name: 'Top',
   data () {
     return {
-      username: '',
-      password: ''
+			isLogin: 'false',
+			user: [],
+			errorMessage: ''
+    }
+  },
+	mounted: function () {
+   this.$auth.onAuthStateChanged(user => {
+      this.errorMessage = ''
+      if (user) {
+				this.isLogin = true
+        this.user = user
+      } else {
+				this.isLogin = false
+        this.user = []
+      };
+    })
+  },
+  components: {
+	Footer
+  },
+  methods: {
+    logOut () {
+     this.$auth.signOut()
     }
   }
 }
